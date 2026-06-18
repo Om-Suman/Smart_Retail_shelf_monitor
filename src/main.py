@@ -1,14 +1,13 @@
 """
-FastAPI Entry Point
+Application Entry Point
 
 Responsibilities
 ----------------
-- Application lifecycle
-- Middleware
-- Exception handling
-- Route registration
-
-Business logic is delegated to ShelfMonitoringService.
+- Create FastAPI application
+- Initialize services
+- Configure middleware
+- Register exception handlers
+- Register API routes
 """
 
 from __future__ import annotations
@@ -18,51 +17,32 @@ import uuid
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
-import torch
-from fastapi import FastAPI, File, Request, UploadFile
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
+from src.api.dependencies import initialize_services
+from src.api.routes import router
 from src.core.exceptions import (
     InvalidImageError,
     ModelLoadError,
 )
 from src.core.logging import logger
-from src.core.config import get_settings
-
-from src.models.schemas import InferenceResponse
-
-from src.services.detection import YOLOInferenceEngine
-from src.services.shelf_service import ShelfMonitoringService
-
-# --------------------------------------------------------
-# Global Services
-# --------------------------------------------------------
-
-detector: YOLOInferenceEngine | None = None
-shelf_service: ShelfMonitoringService | None = None
 
 
 # --------------------------------------------------------
-# Application Lifespan
+# Lifespan
 # --------------------------------------------------------
 
 @asynccontextmanager
 async def lifespan(
     app: FastAPI,
-) -> AsyncGenerator:
+) -> AsyncGenerator[None, None]:
 
-    global detector
-    global shelf_service
+    logger.info("Initializing application services...")
 
-    logger.info("Loading YOLO model...")
+    initialize_services()
 
-    detector = YOLOInferenceEngine()
-
-    detector.warmup()
-
-    shelf_service = ShelfMonitoringService(detector)
-
-    logger.info("Application started.")
+    logger.info("Application started successfully.")
 
     yield
 
@@ -70,15 +50,17 @@ async def lifespan(
 
 
 # --------------------------------------------------------
-# FastAPI
+# FastAPI App
 # --------------------------------------------------------
 
 app = FastAPI(
     title="Smart Retail Shelf Monitoring",
+    description="Production-ready Computer Vision API for Retail Shelf Monitoring",
     version="1.0.0",
-    description="YOLOv11 Retail Shelf Monitoring API",
     lifespan=lifespan,
 )
+
+app.include_router(router)
 
 
 # --------------------------------------------------------
@@ -86,14 +68,14 @@ app = FastAPI(
 # --------------------------------------------------------
 
 @app.middleware("http")
-async def log_requests(
+async def request_logging_middleware(
     request: Request,
     call_next,
 ):
 
-    start = time.perf_counter()
-
     correlation_id = str(uuid.uuid4())
+
+    start = time.perf_counter()
 
     response = await call_next(request)
 
@@ -106,9 +88,10 @@ async def log_requests(
     ] = correlation_id
 
     logger.info(
-        f"{request.method} "
-        f"{request.url.path} "
-        f"{latency:.2f} ms"
+        "[%s] %s %.2f ms",
+        request.method,
+        request.url.path,
+        latency,
     )
 
     return response
@@ -134,7 +117,7 @@ async def handle_model_error(
 
 
 @app.exception_handler(InvalidImageError)
-async def handle_image_error(
+async def handle_invalid_image(
     request: Request,
     exc: InvalidImageError,
 ):
@@ -166,121 +149,20 @@ async def handle_unknown_error(
 
 
 # --------------------------------------------------------
-# Root
-# --------------------------------------------------------
-
-@app.get("/")
-async def root():
-
-    return {
-        "application": "Smart Retail Shelf Monitoring",
-        "version": "1.0.0",
-        "docs": "/docs",
-        "health": "/health",
-    }
-
-
-# --------------------------------------------------------
-# Health
-# --------------------------------------------------------
-
-@app.get("/health")
-async def health():
-
-    gpu_memory = None
-
-    if torch.cuda.is_available():
-
-        gpu_memory = round(
-            torch.cuda.memory_allocated()
-            / (1024 ** 2),
-            2,
-        )
-
-    return {
-
-        "status": "healthy",
-
-        "device": (
-            "CUDA"
-            if torch.cuda.is_available()
-            else "CPU"
-        ),
-
-        "model": (
-            detector.model_name
-            if detector
-            else None
-        ),
-
-        "gpu_memory_mb": gpu_memory,
-
-    }
-
-
-# --------------------------------------------------------
-# Model Info
-# --------------------------------------------------------
-
-@app.get("/model-info")
-async def model_info():
-
-    return {
-
-        "model": detector.model_name,
-
-        "framework": "Ultralytics YOLOv11",
-
-        "device": detector.device,
-
-        "confidence_threshold": detector.confidence,
-
-        "iou_threshold": detector.iou,
-
-    }
-
-
-# --------------------------------------------------------
-# Detection Endpoint
-# --------------------------------------------------------
-
-@app.post(
-    "/api/v1/detect",
-    response_model=InferenceResponse,
-)
-async def detect_objects(
-    image: UploadFile = File(...),
-):
-
-    if shelf_service is None:
-
-        raise ModelLoadError(
-            "ShelfMonitoringService not initialized."
-        )
-
-    return await shelf_service.process_image(
-        image
-    )
-
-
-# --------------------------------------------------------
 # Run
 # --------------------------------------------------------
 
 if __name__ == "__main__":
 
-    settings = get_settings()
-
     import uvicorn
 
+    from src.core.config import get_settings
+
+    settings = get_settings()
+
     uvicorn.run(
-
         "src.main:app",
-
         host=settings.API_HOST,
-
         port=settings.API_PORT,
-
         reload=True,
-
     )
