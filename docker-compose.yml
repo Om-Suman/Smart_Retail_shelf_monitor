@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+
+  backend:
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: smart-retail-backend
+
+    restart: unless-stopped
+
+    ports:
+      - "8000:8000"
+
+    env_file:
+      - .env
+
+    volumes:
+      - .:/app
+
+    command: >
+      uvicorn src.main:app
+      --host 0.0.0.0
+      --port 8000
+
+    networks:
+      - smart-retail-network
+
+  frontend:
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: smart-retail-dashboard
+
+    restart: unless-stopped
+
+    depends_on:
+      - backend
+
+    ports:
+      - "8501:8501"
+
+    volumes:
+      - .:/app
+
+    command: >
+      streamlit run src/frontend/dashboard.py
+      --server.port=8501
+      --server.address=0.0.0.0
+
+    environment:
+      API_URL: http://backend:8000/api/v1/detect
+
+    networks:
+      - smart-retail-network
+
+networks:
+
+  smart-retail-network:
+
+    driver: bridge

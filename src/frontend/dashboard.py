@@ -20,6 +20,7 @@ import pandas as pd
 import streamlit as st
 from PIL import Image
 import plotly.express as px
+import os
 
 # -------------------------------------------------------
 # Page Configuration
@@ -37,9 +38,14 @@ st.set_page_config(
 
 st.sidebar.title("Configuration")
 
+
+
 API_URL = st.sidebar.text_input(
     "FastAPI URL",
-    value="http://127.0.0.1:8000/api/v1/detect",
+    value=os.getenv(
+        "API_URL",
+        "http://127.0.0.1:8000/api/v1/detect",
+    ),
 )
 
 st.sidebar.markdown("---")
