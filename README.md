@@ -23,40 +23,47 @@ The system detects objects in shelf images, annotates them with bounding boxes, 
 # Architecture
 
 ```
-                    User
-
-                      │
-
-                      ▼
-
-             Streamlit Dashboard
-
-                      │
-
-                HTTP Request
-
-                      │
-
-                      ▼
-
-                FastAPI Backend
-
-                      │
-
-        ShelfMonitoringService
-
-          │        │        │
-
-          ▼        ▼        ▼
-
-     YOLO Engine  Counter  Formatter
-
-                      │
-
-                      ▼
-
-               JSON Response
-
+                         +------------------+
+                         |      User        |
+                         +------------------+
+                                  │
+                                  ▼
+                     +-------------------------+
+                     |  Streamlit Dashboard    |
+                     |      (Frontend UI)      |
+                     +-------------------------+
+                                  │
+                           HTTP Request
+                                  │
+                                  ▼
+                     +-------------------------+
+                     |     FastAPI Backend     |
+                     |      (REST API)         |
+                     +-------------------------+
+                                  │
+                                  ▼
+               +--------------------------------------+
+               |      ShelfMonitoringService          |
+               +--------------------------------------+
+                    │             │              │
+                    ▼             ▼              ▼
+          +---------------+ +-------------+ +-------------+
+          |  YOLO Engine  | | Item Counter| |Response     |
+          | (Detection)   | | (Counting)  | | Formatter   |
+          +---------------+ +-------------+ +-------------+
+                    │             │              │
+                    └─────────────┴──────────────┘
+                                  │
+                                  ▼
+                     +-------------------------+
+                     |     JSON Response       |
+                     +-------------------------+
+                                  │
+                                  ▼
+                     +-------------------------+
+                     |  Streamlit Dashboard    |
+                     |   Displays Results      |
+                     +-------------------------+
 ```
 
 ---
@@ -256,16 +263,17 @@ Accepts a JPEG or PNG image and returns
 # Screenshots
 
 ## Dashboard
-
-_Add screenshot here_
+![Dashboard](sample_images/dashboard.png)
 
 ## Detection Result
-
-_Add screenshot here_
+![Detection](sample_images/detection1.png)
+![Detection](sample_images/detection2.png)
+![Detection](sample_images/detection3.png)
 
 ## Swagger UI
 
-_Add screenshot here_
+![Swagger](sample_images/swagger_ui1.png)
+![Swagger](sample_images/swagger_ui2.png)
 
 ---
 

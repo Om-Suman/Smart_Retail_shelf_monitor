@@ -471,30 +471,25 @@ st.sidebar.divider()
 
 st.sidebar.subheader("Backend")
 
-try:
+from urllib.parse import urlparse
 
+parsed = urlparse(API_URL)
+
+health_url = f"{parsed.scheme}://{parsed.netloc}/health"
+
+try:
     health = httpx.get(
-        "http://127.0.0.1:8000/health",
+        health_url,
         timeout=5,
     )
 
     if health.status_code == 200:
-
-        st.sidebar.success(
-            "Backend Connected"
-        )
-
+        st.sidebar.success("Backend Connected")
     else:
-
-        st.sidebar.warning(
-            "Backend Error"
-        )
+        st.sidebar.warning("Backend Error")
 
 except Exception:
-
-    st.sidebar.error(
-        "Backend Offline"
-    )
+    st.sidebar.error("Backend Offline")
 
 # -------------------------------------------------------
 # Reset Session
