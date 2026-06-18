@@ -1,0 +1,25 @@
+model:
+
+  name: yolo11n
+
+  path: yolo11n.pt
+
+  image_size: 640
+
+  confidence_threshold: 0.35
+
+  iou_threshold: 0.45
+
+server:
+
+  host: 0.0.0.0
+
+  port: 8000
+
+logging:
+
+  level: INFO
+
+frontend:
+
+  title: Smart Retail Shelf Monitor
