@@ -148,6 +148,19 @@ Install dependencies.
 pip install -r requirements.txt
 ```
 
+## Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+MODEL_PATH=yolo11n.pt
+CONF_THRESHOLD=0.35
+IOU_THRESHOLD=0.45
+API_HOST=0.0.0.0
+API_PORT=8000
+ENV=development
+```
+
 Run the backend.
 
 ```bash
