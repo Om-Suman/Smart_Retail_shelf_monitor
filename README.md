@@ -292,4 +292,4 @@ Accepts a JPEG or PNG image and returns
 
 # License
 
-MIT License
+MIT [LICENSE]License
