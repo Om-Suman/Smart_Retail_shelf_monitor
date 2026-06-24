@@ -29,3 +29,5 @@ python-multipart==0.0.20
 PyYAML==6.0.2
 
 plotly==6.3.0
+
+pytest==8.4.2
