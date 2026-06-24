@@ -103,6 +103,7 @@ smart-retail-shelf-monitor/
 │   └── main.py
 │
 ├── tests/
+    └── test_api.py
 │
 ├── Dockerfile
 ├── docker-compose.yml
