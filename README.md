@@ -1,24 +1,39 @@
 # 🛒 Smart Retail Shelf Monitoring System
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.116-green)
+![YOLOv11](https://img.shields.io/badge/YOLO-v11-orange)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.x-red)
+![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
 A production-inspired Computer Vision application for automated retail inventory monitoring using **YOLOv11**, **FastAPI**, **PyTorch**, **OpenCV**, and **Streamlit**.
 
 The system detects objects in shelf images, annotates them with bounding boxes, summarizes inventory counts, and exposes the functionality through a REST API and an interactive dashboard.
 
 ---
+## Project Highlights
+
+- Built an end-to-end Computer Vision system using YOLOv11 and PyTorch
+- Developed a modular FastAPI backend with service-oriented architecture
+- Created an interactive Streamlit dashboard for inventory analytics
+- Containerized the application using Docker and Docker Compose
+- Demonstrates model serving, API development, frontend integration, and deployment
+
+## Detection Result
+![Detection](sample_images/detection1.png)
+![Detection](sample_images/detection2.png)
+![Detection](sample_images/detection3.png)
 
 ## Features
 
-- Object detection using YOLOv11
-- FastAPI REST API
-- Streamlit dashboard
-- Automatic inventory counting
-- Annotated image generation
-- Health monitoring endpoint
-- Model information endpoint
-- Modular service-oriented architecture
-- Docker support
-
----
+- Real-time object detection using YOLOv11
+- Automated inventory counting and summarization
+- FastAPI REST API with structured responses
+- Interactive Streamlit dashboard
+- Annotated image generation and visualization
+- Health monitoring and model information endpoints
+- Dockerized deployment with Docker Compose
+- Modular and scalable service-oriented architecture
 
 # Architecture
 
@@ -91,8 +106,11 @@ smart-retail-shelf-monitor/
 │
 ├── Dockerfile
 ├── docker-compose.yml
+├── .env.example
 ├── requirements.txt
 └── README.md
+└── LICENSE
+
 ```
 
 ---
@@ -278,10 +296,7 @@ Accepts a JPEG or PNG image and returns
 ## Dashboard
 ![Dashboard](sample_images/dashboard.png)
 
-## Detection Result
-![Detection](sample_images/detection1.png)
-![Detection](sample_images/detection2.png)
-![Detection](sample_images/detection3.png)
+
 
 ## Swagger UI
 
@@ -292,4 +307,6 @@ Accepts a JPEG or PNG image and returns
 
 # License
 
-MIT [LICENSE]License
+This project is licensed under the MIT License.
+
+See the [LICENSE](LICENSE) file for details.
