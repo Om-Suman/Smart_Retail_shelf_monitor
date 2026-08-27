@@ -1,6 +1,11 @@
 import { UploadCloud } from "lucide-react";
 
-export default function UploadPanel({ error, inputRef, onFileChange, selectedFile }) {
+export default function UploadPanel({
+  error,
+  inputRef,
+  onFileChange,
+  selectedFile,
+}) {
   function handleChange(event) {
     const file = event.target.files?.[0];
 
@@ -12,7 +17,7 @@ export default function UploadPanel({ error, inputRef, onFileChange, selectedFil
   return (
     <section className="upload-panel">
       <input
-        accept="image/jpeg,image/png"
+        accept=".jpg,.jpeg,.png,.avif,image/jpeg,image/png,image/avif"
         className="file-input"
         id="shelf-image"
         onChange={handleChange}
@@ -22,7 +27,7 @@ export default function UploadPanel({ error, inputRef, onFileChange, selectedFil
       <label className="dropzone" htmlFor="shelf-image">
         <UploadCloud size={28} />
         <span>{selectedFile ? selectedFile.name : "Upload shelf image"}</span>
-        <small>JPG, JPEG, or PNG</small>
+        <small>JPG, JPEG, PNG, or AVIF</small>
       </label>
       {error && <p className="error-message">{error}</p>}
     </section>

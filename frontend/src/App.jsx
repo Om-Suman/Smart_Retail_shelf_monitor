@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Activity, Boxes, Server } from "lucide-react";
 import { detectShelfImage } from "./api/shelfApi.js";
 import Sidebar from "./components/Sidebar.jsx";
@@ -91,7 +91,11 @@ export default function App() {
         />
 
         <section className="image-grid">
-          <ImagePanel imageUrl={previewUrl} title="Original Image" type="original" />
+          <ImagePanel
+            imageUrl={previewUrl}
+            title="Original Image"
+            type="original"
+          />
           <ImagePanel
             imageUrl={annotatedImageUrl}
             placeholder="Results will appear after detection"
@@ -113,7 +117,11 @@ export default function App() {
                 label="Inference time"
                 value={formatMs(metadata.inference_time_ms)}
               />
-              <MetricCard icon={Server} label="Model" value={metadata.model_name || "Unknown"} />
+              <MetricCard
+                icon={Server}
+                label="Model"
+                value={metadata.model_name || "Unknown"}
+              />
             </section>
 
             <ResultsDashboard result={result} />
