@@ -32,10 +32,10 @@ services:
   frontend:
 
     build:
-      context: .
+      context: ./frontend
       dockerfile: Dockerfile
 
-    container_name: smart-retail-dashboard
+    container_name: smart-retail-frontend
 
     restart: unless-stopped
 
@@ -43,18 +43,13 @@ services:
       - backend
 
     ports:
-      - "8501:8501"
-
-    volumes:
-      - .:/app
+      - "4173:4173"
 
     command: >
-      streamlit run src/frontend/dashboard.py
-      --server.port=8501
-      --server.address=0.0.0.0
+      npm run preview
 
     environment:
-      API_URL: http://backend:8000/api/v1/detect
+      VITE_API_URL: http://127.0.0.1:8000/api/v1/detect
 
     networks:
       - smart-retail-network

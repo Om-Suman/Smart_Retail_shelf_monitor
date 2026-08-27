@@ -6,7 +6,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
-A production-inspired Computer Vision application for automated retail inventory monitoring using **YOLOv11**, **FastAPI**, **PyTorch**, **OpenCV**, and **Streamlit**.
+A production-inspired Computer Vision application for automated retail inventory monitoring using **YOLOv11**, **FastAPI**, **PyTorch**, **OpenCV**, and **React**.
 
 The system detects objects in shelf images, annotates them with bounding boxes, summarizes inventory counts, and exposes the functionality through a REST API and an interactive dashboard.
 
@@ -15,7 +15,7 @@ The system detects objects in shelf images, annotates them with bounding boxes, 
 
 - Built an end-to-end Computer Vision system using YOLOv11 and PyTorch
 - Developed a modular FastAPI backend with service-oriented architecture
-- Created an interactive Streamlit dashboard for inventory analytics
+- Created an interactive React dashboard for inventory analytics
 - Containerized the application using Docker and Docker Compose
 - Demonstrates model serving, API development, frontend integration, and deployment
 
@@ -29,7 +29,7 @@ The system detects objects in shelf images, annotates them with bounding boxes, 
 - Real-time object detection using YOLOv11
 - Automated inventory counting and summarization
 - FastAPI REST API with structured responses
-- Interactive Streamlit dashboard
+- Interactive React dashboard
 - Annotated image generation and visualization
 - Health monitoring and model information endpoints
 - Dockerized deployment with Docker Compose
@@ -44,7 +44,7 @@ The system detects objects in shelf images, annotates them with bounding boxes, 
                                   │
                                   ▼
                      +-------------------------+
-                     |  Streamlit Dashboard    |
+                     |    React Dashboard      |
                      |      (Frontend UI)      |
                      +-------------------------+
                                   │
@@ -76,7 +76,7 @@ The system detects objects in shelf images, annotates them with bounding boxes, 
                                   │
                                   ▼
                      +-------------------------+
-                     |  Streamlit Dashboard    |
+                     |    React Dashboard      |
                      |   Displays Results      |
                      +-------------------------+
 ```
@@ -116,6 +116,31 @@ smart-retail-shelf-monitor/
 
 ---
 
+# Code Layout
+
+```text
+frontend/
+  src/
+    api/          Browser API calls to FastAPI
+    components/   Reusable React UI components
+    config/       Frontend environment defaults
+    hooks/        React hooks for shared state/effects
+    utils/        Formatting and download helpers
+    App.jsx       Dashboard orchestration
+    main.jsx      React entry point
+
+src/
+  api/            Routes, dependencies, middleware, exception handlers
+  core/           Settings, logging, and exceptions
+  models/         Pydantic request/response schemas
+  services/       Detection, counting, and formatting logic
+  utils/          Image processing helpers
+  app_factory.py  FastAPI app creation and registration
+  main.py         ASGI entry point
+```
+
+---
+
 # Tech Stack
 
 | Component | Technology |
@@ -124,7 +149,7 @@ smart-retail-shelf-monitor/
 | Deep Learning | PyTorch |
 | Detection Model | YOLOv11 |
 | Backend | FastAPI |
-| Frontend | Streamlit |
+| Frontend | React + Vite |
 | Image Processing | OpenCV |
 | Data Models | Pydantic |
 | Containerization | Docker |
@@ -186,10 +211,13 @@ Run the backend.
 python -m uvicorn src.main:app --reload
 ```
 
-Run Streamlit.
+Run React.
 
 ```bash
-streamlit run src/frontend/dashboard.py
+cd frontend
+npm install
+npm run build
+npm run preview
 ```
 
 ---
@@ -217,7 +245,7 @@ http://localhost:8000/docs
 Dashboard
 
 ```
-http://localhost:8501
+http://localhost:4173
 ```
 
 ---

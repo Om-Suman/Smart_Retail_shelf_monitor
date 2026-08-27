@@ -1,7 +1,3 @@
-"""
-Dependency injection for FastAPI.
-"""
-
 from __future__ import annotations
 
 from src.services.detection import YOLOInferenceEngine
@@ -12,9 +8,6 @@ _service: ShelfMonitoringService | None = None
 
 
 def initialize_services() -> None:
-    """
-    Initialize application services once during startup.
-    """
     global _detector
     global _service
 
@@ -27,24 +20,14 @@ def initialize_services() -> None:
 
 
 def get_detector() -> YOLOInferenceEngine:
-    """
-    Returns singleton detector.
-    """
     if _detector is None:
-        raise RuntimeError(
-            "Detector has not been initialized."
-        )
+        raise RuntimeError("Detector has not been initialized.")
 
     return _detector
 
 
 def get_shelf_service() -> ShelfMonitoringService:
-    """
-    Returns singleton ShelfMonitoringService.
-    """
     if _service is None:
-        raise RuntimeError(
-            "ShelfMonitoringService has not been initialized."
-        )
+        raise RuntimeError("ShelfMonitoringService has not been initialized.")
 
     return _service

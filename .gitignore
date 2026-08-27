@@ -16,15 +16,13 @@ venv/
 logs/
 *.log
 
-# Streamlit
-.streamlit/
-
 # Pytest
 .pytest_cache/
 
 # Build
 dist/
 build/
+node_modules/
 
 # Docker
 *.tar
