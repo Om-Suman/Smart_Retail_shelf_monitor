@@ -17,7 +17,7 @@ export default function UploadPanel({
   return (
     <section className="upload-panel">
       <input
-        accept=".jpg,.jpeg,.png,.avif,image/jpeg,image/png,image/avif"
+        accept=".jpg,.jpeg,.png,image/jpeg,image/png,image"
         className="file-input"
         id="shelf-image"
         onChange={handleChange}
@@ -27,7 +27,7 @@ export default function UploadPanel({
       <label className="dropzone" htmlFor="shelf-image">
         <UploadCloud size={28} />
         <span>{selectedFile ? selectedFile.name : "Upload shelf image"}</span>
-        <small>JPG, JPEG, PNG, or AVIF</small>
+        <small>JPG, JPEG, PNG</small>
       </label>
       {error && <p className="error-message">{error}</p>}
     </section>
