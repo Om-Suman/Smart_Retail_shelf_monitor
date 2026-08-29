@@ -1,9 +1,11 @@
 model:
   name: product_best
 
-  path: product_best.pt
+  path: models/product_best.pt
 
   image_size: 640
+
+  # Alternative model: models/void_best.pt
 
   confidence_threshold: 0.35
 

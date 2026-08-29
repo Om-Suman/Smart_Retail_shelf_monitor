@@ -15,7 +15,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    MODEL_PATH: str = Field(default="product_best.pt")
+    MODEL_PATH: str = Field(default="models/product_best.pt")
     CONF_THRESHOLD: float = Field(default=0.35)
     IOU_THRESHOLD: float = Field(default=0.45)
 
