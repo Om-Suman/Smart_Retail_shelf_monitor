@@ -12,14 +12,27 @@ export default function useBackendStatus(apiUrl) {
       return;
     }
 
-    const controller = new AbortController();
     setStatus("checking");
 
-    checkBackendHealth(healthUrl, controller.signal)
-      .then((isHealthy) => setStatus(isHealthy ? "online" : "error"))
-      .catch(() => setStatus("offline"));
+    const checkHealth = async () => {
+      try {
+        const isHealthy = await checkBackendHealth(healthUrl);
+        setStatus(isHealthy ? "online" : "error");
+      } catch (error) {
+        setStatus("offline");
+      }
+    };
 
-    return () => controller.abort();
+    // Initial check after a small delay to allow server to start
+    const timer = setTimeout(checkHealth, 500);
+
+    // Retry every 5 seconds
+    const intervalId = setInterval(checkHealth, 5000);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(intervalId);
+    };
   }, [healthUrl]);
 
   return status;

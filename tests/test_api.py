@@ -29,6 +29,7 @@ def test_health_endpoint():
     data = response.json()
 
     assert data["status"] == "healthy"
+    assert data["models"] == ["product_best", "void_best"]
 
 
 def test_invalid_image_upload():

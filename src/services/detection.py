@@ -189,10 +189,151 @@ class YOLOInferenceEngine:
             dtype=np.uint8,
         )
 
-        self.model.predict(
-            dummy,
-            verbose=False,
-            device=self.device,
+        self.infer(dummy)
+
+
+class MultiModelInferenceEngine:
+    """
+    Multi-model inference engine that runs both
+    product_best and void_best models.
+    """
+
+    def __init__(self) -> None:
+        self.device = (
+            "cuda"
+            if torch.cuda.is_available()
+            else "cpu"
         )
 
-        logger.info("Model warmup completed.")
+        self.confidence = 0.35
+        self.iou = 0.45
+        self.lock = threading.Lock()
+
+        # Load both models
+        self.product_model = self._load_model("models/product_best.pt")
+        self.void_model = self._load_model("models/void_best.pt")
+
+    def _load_model(self, model_path: str) -> YOLO:
+        """
+        Load a YOLO model.
+        """
+        try:
+            if not Path(model_path).exists():
+                logger.warning(
+                    f"Model file not found: {model_path}. "
+                    "Ultralytics will download automatically."
+                )
+
+            model = YOLO(model_path)
+            model.to(self.device)
+            logger.info(
+                f"Model {Path(model_path).stem} loaded on {self.device.upper()}"
+            )
+            return model
+
+        except Exception as e:
+            raise ModelLoadError(
+                f"Unable to load model {model_path}: {e}"
+            )
+
+    def infer(
+        self,
+        image: np.ndarray,
+    ) -> Tuple[List[BoundingBox], List[BoundingBox], float, float]:
+        """
+        Run inference on both models.
+
+        Returns
+        -------
+        (
+            product_detections,
+            void_detections,
+            product_inference_time_ms,
+            void_inference_time_ms
+        )
+        """
+
+        start = perf_counter()
+
+        with self.lock:
+            product_results = self.product_model.predict(
+                source=image,
+                conf=self.confidence,
+                iou=self.iou,
+                verbose=False,
+                device=self.device,
+            )
+
+        product_inference_time = (perf_counter() - start) * 1000
+
+        start = perf_counter()
+
+        with self.lock:
+            void_results = self.void_model.predict(
+                source=image,
+                conf=self.confidence,
+                iou=self.iou,
+                verbose=False,
+                device=self.device,
+            )
+
+        void_inference_time = (perf_counter() - start) * 1000
+
+        product_detections = self._parse_results(product_results, "product")
+        void_detections = self._parse_results(void_results, "void")
+
+        return product_detections, void_detections, product_inference_time, void_inference_time
+
+    def _parse_results(
+        self,
+        results,
+        model_source: str,
+    ) -> List[BoundingBox]:
+        """
+        Convert Ultralytics output into BoundingBox models.
+        """
+
+        parsed: List[BoundingBox] = []
+
+        if len(results) == 0:
+            return parsed
+
+        result = results[0]
+        names = result.names
+
+        for box in result.boxes:
+            cls = int(box.cls.item())
+            conf = float(box.conf.item())
+
+            xyxy = (
+                box.xyxy[0]
+                .cpu()
+                .numpy()
+                .astype(int)
+            )
+
+            parsed.append(
+                BoundingBox(
+                    class_id=cls,
+                    class_name=names[cls],
+                    confidence=round(conf, 4),
+                    x_min=int(xyxy[0]),
+                    y_min=int(xyxy[1]),
+                    x_max=int(xyxy[2]),
+                    y_max=int(xyxy[3]),
+                    model_source=model_source,
+                )
+            )
+
+        return parsed
+
+    def warmup(self) -> None:
+        """
+        Warm up both models.
+        """
+        dummy = np.zeros(
+            (640, 640, 3),
+            dtype=np.uint8,
+        )
+
+        self.infer(dummy)

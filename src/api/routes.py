@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, File, UploadFile
 from src.api.dependencies import get_detector, get_shelf_service
 from src.core.exceptions import ModelLoadError
 from src.models.schemas import InferenceResponse
-from src.services.detection import YOLOInferenceEngine
+from src.services.detection import MultiModelInferenceEngine
 from src.services.shelf_service import ShelfMonitoringService
 
 router = APIRouter()
@@ -30,8 +30,8 @@ async def root() -> dict[str, str]:
     tags=["Health"],
 )
 async def health(
-    detector: YOLOInferenceEngine = Depends(get_detector),
-) -> dict[str, str | float | None]:
+    detector: MultiModelInferenceEngine = Depends(get_detector),
+) -> dict[str, str | float | list[str] | None]:
     gpu_memory = None
 
     if torch.cuda.is_available():
@@ -40,7 +40,7 @@ async def health(
     return {
         "status": "healthy",
         "device": detector.device.upper(),
-        "model": detector.model_name,
+        "models": ["product_best", "void_best"],
         "gpu_memory_mb": gpu_memory,
     }
 
@@ -50,10 +50,10 @@ async def health(
     tags=["Model"],
 )
 async def model_info(
-    detector: YOLOInferenceEngine = Depends(get_detector),
-) -> dict[str, str | float]:
+    detector: MultiModelInferenceEngine = Depends(get_detector),
+) -> dict[str, str | float | list[str]]:
     return {
-        "model": detector.model_name,
+        "models": ["product_best", "void_best"],
         "framework": "Ultralytics YOLOv11",
         "device": detector.device,
         "confidence_threshold": detector.confidence,

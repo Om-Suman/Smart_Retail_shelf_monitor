@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from src.services.detection import YOLOInferenceEngine
+from src.services.detection import MultiModelInferenceEngine
 from src.services.shelf_service import ShelfMonitoringService
 
-_detector: YOLOInferenceEngine | None = None
+_detector: MultiModelInferenceEngine | None = None
 _service: ShelfMonitoringService | None = None
 
 
@@ -12,14 +12,14 @@ def initialize_services() -> None:
     global _service
 
     if _detector is None:
-        _detector = YOLOInferenceEngine()
+        _detector = MultiModelInferenceEngine()
         _detector.warmup()
 
     if _service is None:
         _service = ShelfMonitoringService(_detector)
 
 
-def get_detector() -> YOLOInferenceEngine:
+def get_detector() -> MultiModelInferenceEngine:
     if _detector is None:
         raise RuntimeError("Detector has not been initialized.")
 

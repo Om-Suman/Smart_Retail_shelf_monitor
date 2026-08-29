@@ -17,6 +17,19 @@ export async function detectShelfImage(apiUrl, file) {
 }
 
 export async function checkBackendHealth(healthUrl, signal) {
-  const response = await fetch(healthUrl, { signal });
-  return response.ok;
+  try {
+    const response = await fetch(healthUrl, {
+      signal,
+      method: "GET",
+    });
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const payload = await response.json().catch(() => null);
+    return payload?.status === "healthy" || payload?.ok === true;
+  } catch (error) {
+    return false;
+  }
 }

@@ -15,6 +15,7 @@ class BoundingBox(BaseModel):
     y_min: int
     x_max: int
     y_max: int
+    model_source: str = Field(default="product")  # product or void
 
 
 class InventoryItem(BaseModel):
@@ -43,7 +44,8 @@ class DetectionMetadata(BaseModel):
     inference_time_ms: float
     image_width: int
     image_height: int
-    model_name: str
+    model_names: List[str]  # e.g., ["product_best", "void_best"]
+    model_times_ms: dict  # e.g., {"product_best": 100.5, "void_best": 95.3}
 
 
 class InferenceResponse(BaseModel):

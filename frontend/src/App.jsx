@@ -120,7 +120,11 @@ export default function App() {
               <MetricCard
                 icon={Server}
                 label="Model"
-                value={metadata.model_name || "Unknown"}
+                value={
+                  metadata.model_names
+                    ? metadata.model_names.join(", ")
+                    : "Unknown"
+                }
               />
             </section>
 

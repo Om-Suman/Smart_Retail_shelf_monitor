@@ -13,16 +13,23 @@ class ResponseFormatter:
         detections: list[BoundingBox],
         inventory: InventorySummary,
         annotated_image: np.ndarray,
-        inference_time_ms: float,
-        model_name: str,
+        product_inference_time_ms: float,
+        void_inference_time_ms: float,
+        model_names: list[str],
     ) -> InferenceResponse:
         height, width = annotated_image.shape[:2]
+        
+        total_time = product_inference_time_ms + void_inference_time_ms
 
         metadata = DetectionMetadata(
-            inference_time_ms=round(inference_time_ms, 2),
+            inference_time_ms=round(total_time, 2),
             image_width=width,
             image_height=height,
-            model_name=model_name,
+            model_names=model_names,
+            model_times_ms={
+                "product_best": round(product_inference_time_ms, 2),
+                "void_best": round(void_inference_time_ms, 2),
+            },
         )
 
         return InferenceResponse(
