@@ -1,6 +1,7 @@
 import time
 import uuid
 from collections.abc import Awaitable, Callable
+import os
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,8 +15,12 @@ ALLOWED_CORS_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://smart-retail-shelf-monitor.vercel.app/"
+    "https://smart-retail-shelf-monitor.vercel.app",
 ]
+
+configured_frontend_url = os.getenv("FRONTEND_URL", "").strip().rstrip("/")
+if configured_frontend_url and configured_frontend_url not in ALLOWED_CORS_ORIGINS:
+    ALLOWED_CORS_ORIGINS.append(configured_frontend_url)
 
 
 def register_middleware(app: FastAPI) -> None:

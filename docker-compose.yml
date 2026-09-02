@@ -1,9 +1,7 @@
 version: "3.9"
 
 services:
-
   backend:
-
     build:
       context: .
       dockerfile: Dockerfile
@@ -30,10 +28,11 @@ services:
       - smart-retail-network
 
   frontend:
-
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000/api/v1/detect}
 
     container_name: smart-retail-frontend
 
@@ -48,14 +47,9 @@ services:
     command: >
       npm run preview
 
-    environment:
-      VITE_API_URL: http://127.0.0.1:8000/api/v1/detect
-
     networks:
       - smart-retail-network
 
 networks:
-
   smart-retail-network:
-
     driver: bridge
